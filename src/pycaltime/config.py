@@ -1,0 +1,9 @@
+from os import environ
+
+FLASK_SECRET_KEY = environ.get("FLASK_SECRET_KEY")
+GOOGLE_CLIENT_ID = environ.get("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = environ.get("GOOGLE_CLIENT_SECRET")
+AWS_DEFAULT_REGION = environ.get("AWS_DEFAULT_REGION")
+
+FULL_TIME_HOURS = 37.5
+
