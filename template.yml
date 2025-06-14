@@ -6,7 +6,7 @@ Resources:
   PyCalTimeFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: .
+      CodeUri: src
       PackageType: Image
       Timeout: 300
       MemorySize: 1024
@@ -15,7 +15,7 @@ Resources:
       FunctionUrlConfig:
         AuthType: NONE
     Metadata:
-      DockerTag: ICalendarFilterFunction
+      DockerTag: PyCalTimeFunction
       Dockerfile: Dockerfile
       DockerContext: .
 
