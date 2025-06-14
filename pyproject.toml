@@ -36,6 +36,7 @@ dependencies = [
     "google-auth-httplib2>=0.2",
     "google-auth-oauthlib>=1.2",
     "apig-wsgi>=2.19",
+    "python-dotenv>=1.1",
 ]
 
 [project.urls]
