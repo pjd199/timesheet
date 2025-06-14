@@ -1,0 +1,124 @@
+name: CI-CD-Pipeline
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+
+  pull_request:
+    types: [opened, edited, reopened]
+
+concurrency:
+  group: CICD${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: 3.12
+
+jobs:
+  check:
+    name: Static checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Repository
+        uses: actions/checkout@v4
+
+      - name: Setup up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - uses: actions/cache@v4
+        name: Load dependency cache
+        id: dependency-cache
+        with:
+          path: ${{ env.pythonLocation }}
+          key:
+            pyproject-${{ env.pythonLocation }}-${{ env.PYTHON_VERSION }}-${{hashFiles('pyproject.toml') }}
+
+      - name: Install packages
+        if: steps.dependency-cache.outputs.cache-hit != 'true'
+        run: |
+          pip install pre-commit
+          pip install --editable .
+        
+      - uses: actions/cache@v4
+        name: Load pre-commit cache
+        with:
+          path: ~/.cache/pre-commit
+          key:
+            pre-commit-${{ env.pythonLocation }}-${{ env.PYTHON_VERSION }}-${{hashFiles('.pre-commit-config.yaml') }}
+
+      - name: Run pre-commit on all files
+        run: pre-commit run --all-files
+
+  build-and-deploy:
+    name: Deploy to AWS Lambda
+    needs: [check]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Setup AWS SAM
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: SAM Validate
+        run: sam validate --lint
+
+      - name: SAM Build
+        run: sam build --config-file samconfig.toml
+
+      - name: SAM Deploy to AWS Lambda
+        run:
+          sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
+
+  system-test:
+    name: System Testing
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out respository
+        uses: actions/checkout@v4
+
+      - name: Setup up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - uses: actions/cache@v4
+        name: Load dependency cache
+        id: dependency-cache
+        with:
+          path: ${{ env.pythonLocation }}
+          key:
+            pyproject-${{ env.pythonLocation }}-${{ env.PYTHON_VERSION }}-${{hashFiles('pyproject.toml') }}
+
+      - name: Install editable package
+        if: steps.dependency-cache.outputs.cache-hit != 'true'
+        run: pip install --editable .
