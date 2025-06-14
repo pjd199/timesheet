@@ -7,4 +7,4 @@ region = "eu-west-2"
 capabilities = "CAPABILITY_IAM"
 resolve_s3 = true
 s3_prefix = "pycaltime"
-image_repositories = ["012346180589.dkr.ecr.eu-west-2.amazonaws.com/pycaltime"]
+image_repositories = ["PyCalTimeFunction=012346180589.dkr.ecr.eu-west-2.amazonaws.com/icalendarfilter8d25a4e9/icalendarfilterfunction07f70b4erepo"]
