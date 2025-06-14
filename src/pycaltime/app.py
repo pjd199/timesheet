@@ -7,11 +7,12 @@ from apig_wsgi import make_lambda_handler
 from flask import Flask, redirect, render_template, session, url_for
 from flask.typing import ResponseReturnValue
 from flask_dance.contrib.google import google, make_google_blueprint
+from werkzeug.middleware.proxy_fix import ProxyFix
+
 from pycaltime.calendar import first_day_of_the_week, update_timesheets
 from pycaltime.config import config
 from pycaltime.google import get_calendar_timezone, get_user_info
 from pycaltime.storage import JobData, UserData, initialize_database
-from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Initialize Flask
 app = Flask(__name__)
