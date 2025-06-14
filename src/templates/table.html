@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Timesheet</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        .highlight-row {
+            background-color: #ffff99;
+            /* A light yellow for highlighting */
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 style="text-align: center;">Timesheet</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    {% for job in user_data.jobs %}
+                    <th>{{job.short_name}}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for week in weeks %}
+                <tr {% if week==this_week %} class="highlight-row" {% endif %}>
+                    <td>{{ week.strftime('%d-%m-%Y') }}</td>
+                    {% for job in user_data.jobs %}
+                        <td>
+                            {{ '%.2f' % (job.timesheets[week].total()/60) }}
+                            ({{'%.2f' % (job.timesheets[week].flexi/60) }})
+                        </td>
+                    {% endfor %}
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+</body>
+
+</html>
