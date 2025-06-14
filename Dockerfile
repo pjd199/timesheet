@@ -40,4 +40,4 @@ COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
 
 # Set entry point and lambda handler
 ENTRYPOINT [ "/usr/local/bin/python", "-m", "awslambdaric" ]
-CMD ["app.lambda_handler"]
+CMD ["src.app.lambda_handler"]
