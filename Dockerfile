@@ -2,7 +2,7 @@
 ARG FUNCTION_DIR="/var/task/"
 
 # Define package source
-ARG BUILD_PACKAGE=timesheet@git+https://github.com/pjd199/timesheet@main
+ARG BUILD_PACKAGE=pycaltime@git+https://github.com/pjd199/timesheet@main
 #
 # Create the build image 
 #
