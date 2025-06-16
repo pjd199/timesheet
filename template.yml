@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
 Description: SAM Template for pycaltime
 
@@ -6,18 +6,25 @@ Resources:
   PyCalTimeFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src
-      PackageType: Image
+      CodeUri: .aws-sam-build
+      PackageType: Zip
+      Runtime: python3.12
+      Handler: pycaltime.app.lambda_handler
       Timeout: 300
       MemorySize: 1024
       Architectures:
-      - x86_64
+      - arm64
       FunctionUrlConfig:
         AuthType: NONE
-    Metadata:
-      DockerTag: PyCalTimeFunction
-      Dockerfile: Dockerfile
-      DockerContext: .
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: PyCalTimeUserData
+        - Statement:
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+                - secretsmanager:DescribeSecret
+              Resource: "*"
 
 Outputs:
   Function:

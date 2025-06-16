@@ -37,6 +37,13 @@
 		"install package": "pip install -e .",
 		"pre-commit": "pre-commit install --install-hooks"
 	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"njpwerner.autodocstring"
+			]
+		}
+	},
 
 	// Configure tool-specific properties.
 	// "customizations": {},

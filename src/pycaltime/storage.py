@@ -159,7 +159,7 @@ class UserData(Model):
         """Metadata."""
 
         table_name = "PyCalTimeUserData"
-        region = config.AWS_DEFAULT_REGION
+        region = config.AWS_REGION
 
     id = UnicodeAttribute(hash_key=True)
     email = UnicodeAttribute()
