@@ -23,16 +23,16 @@ class Config:
     # FLASK_SECRET_KEY - Must be unique per installation
     # python -c 'import secrets; print(secrets.token_hex())'
     # '192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf'"""
-    FLASK_SECRET_KEY = ""
+    FLASK_SECRET_KEY = None
 
     # GOOGLE_CLIENT_ID - from the Google console
-    GOOGLE_CLIENT_ID = ""
+    GOOGLE_CLIENT_ID = None
 
     # GOOGLE_CLIENT_SECRET - from the Google console
-    GOOGLE_CLIENT_SECRET = ""
+    GOOGLE_CLIENT_SECRET = None
 
     # AWS_REGION
-    AWS_REGION = ""
+    AWS_REGION = None
 
     @cached_property
     def aws_secrets(self) -> dict[str, str]:

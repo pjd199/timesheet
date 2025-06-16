@@ -1,2 +1,3 @@
-# timesheet
-A timesheet in python
+# pycaltime
+
+A timesheet application in python
