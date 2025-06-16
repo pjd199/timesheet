@@ -30,27 +30,25 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - uses: actions/cache@v4
         name: Load dependency cache
         id: dependency-cache
         with:
           path: ${{ env.pythonLocation }}
-          key:
-            pyproject-${{ env.pythonLocation }}-${{ env.PYTHON_VERSION }}-${{hashFiles('pyproject.toml') }}
+          key: pyproject-${{ env.pythonLocation }}-${{ env.PYTHON_VERSION }}-${{hashFiles('pyproject.toml') }}
 
       - name: Install packages
         if: steps.dependency-cache.outputs.cache-hit != 'true'
         run: |
           pip install pre-commit
           pip install --editable .
-        
+
       - uses: actions/cache@v4
         name: Load pre-commit cache
         with:
           path: ~/.cache/pre-commit
-          key:
-            pre-commit-${{ env.pythonLocation }}-${{ env.PYTHON_VERSION }}-${{hashFiles('.pre-commit-config.yaml') }}
+          key: pre-commit-${{ env.pythonLocation }}-${{ env.PYTHON_VERSION }}-${{hashFiles('.pre-commit-config.yaml') }}
 
       - name: Run pre-commit on all files
         run: pre-commit run --all-files
@@ -62,6 +60,13 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        name: Load dependency cache
+        id: dependency-cache
+        with:
+          path: ${{ env.pythonLocation }}
+          key: pyproject-${{ env.pythonLocation }}-${{ env.PYTHON_VERSION }}-${{hashFiles('pyproject.toml') }}
 
       - name: Setup AWS SAM
         uses: aws-actions/setup-sam@v2
@@ -82,8 +87,7 @@ jobs:
         run: pip install . -t .aws-sam-build
 
       - name: SAM Deploy to AWS Lambda
-        run:
-          sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
+        run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
 
   system-test:
     name: System Testing
@@ -110,8 +114,7 @@ jobs:
         id: dependency-cache
         with:
           path: ${{ env.pythonLocation }}
-          key:
-            pyproject-${{ env.pythonLocation }}-${{ env.PYTHON_VERSION }}-${{hashFiles('pyproject.toml') }}
+          key: pyproject-${{ env.pythonLocation }}-${{ env.PYTHON_VERSION }}-${{hashFiles('pyproject.toml') }}
 
       - name: Install editable package
         if: steps.dependency-cache.outputs.cache-hit != 'true'
