@@ -3,7 +3,7 @@
 from typing import Any
 
 from apig_wsgi import make_lambda_handler
-from flask import Flask, current_app, send_from_directory
+from flask import Flask, send_from_directory
 from flask.typing import ResponseReturnValue
 from flask_dance.contrib.google import make_google_blueprint
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -49,7 +49,8 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     return app
 
 
-lambda_handler = make_lambda_handler(current_app)
+lambda_handler = make_lambda_handler(create_app())
+
 
 # @app.route("/")
 # def home() -> ResponseReturnValue:
