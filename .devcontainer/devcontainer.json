@@ -40,7 +40,9 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"njpwerner.autodocstring"
+				"njpwerner.autodocstring",
+				"charliermarsh.ruff",
+				"ms-python.black-formatter"
 			]
 		}
 	},
