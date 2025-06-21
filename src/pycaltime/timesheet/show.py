@@ -3,18 +3,20 @@
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
-from flask import Blueprint, redirect, render_template, session, url_for
+from flask import Blueprint, redirect, render_template, url_for
 from flask.typing import ResponseReturnValue
 from flask_dance.contrib.google import google
 
 from pycaltime.calendar import first_day_of_the_week, update_timesheets
-from pycaltime.google import get_calendar_timezone
+from pycaltime.google import get_calendar_timezone, get_user_info
 from pycaltime.storage import UserData
 
-show_timesheet = Blueprint("show_timesheet", __name__, template_folder="templates")
+timesheet_blueprint = Blueprint(
+    "timesheet_blueprint", __name__, template_folder="templates"
+)
 
 
-@show_timesheet.route("/show")
+@timesheet_blueprint.route("/show")
 def show() -> ResponseReturnValue:
     """Show timesheet.
 
@@ -24,12 +26,9 @@ def show() -> ResponseReturnValue:
     if not google.authorized or google.token["expires_in"] < 0:
         return redirect(url_for("google.login"))
 
-    calendar_timezone = get_calendar_timezone()
-    current_week = first_day_of_the_week(
-        datetime.now(tz=ZoneInfo(calendar_timezone)).date()
-    )
-
-    user_id = session.get("user_id")
+    user_id = get_user_info().id
+    timezone = get_calendar_timezone()
+    current_week = first_day_of_the_week(datetime.now(tz=ZoneInfo(timezone)).date())
     user_data = list(UserData.query(user_id)).pop()
 
     # update with recent calendar data
@@ -38,7 +37,7 @@ def show() -> ResponseReturnValue:
         current_week + timedelta(weeks=user_data.view_future_weeks + 1),
         user_data,
     )
-    user_data.last_updated = datetime.now(tz=ZoneInfo(calendar_timezone))
+    user_data.last_updated = datetime.now(tz=ZoneInfo(timezone))
     user_data.save()
 
     # cacluate flexi time

@@ -4,12 +4,13 @@ from typing import Any
 
 from flask import Flask, send_from_directory
 from flask.typing import ResponseReturnValue
-from flask_dance.contrib.google import make_google_blueprint
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+from pycaltime.auth.google import google_blueprint
 from pycaltime.config import config
 from pycaltime.storage import initialize_database
-from pycaltime.timesheet.show import show_timesheet
+from pycaltime.timesheet.show import timesheet_blueprint
+from pycaltime.user.user_home import user_home_blueprint
 
 
 # Flask app factory
@@ -26,17 +27,9 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     app.config.from_mapping(test_config)
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
     app.secret_key = config.FLASK_SECRET_KEY
-    blueprint = make_google_blueprint(
-        client_id=config.GOOGLE_CLIENT_ID,
-        client_secret=config.GOOGLE_CLIENT_SECRET,
-        scope=[
-            "https://www.googleapis.com/auth/userinfo.profile",
-            "https://www.googleapis.com/auth/userinfo.email",
-            "https://www.googleapis.com/auth/calendar.readonly",
-        ],
-    )
-    app.register_blueprint(blueprint, url_prefix="/login")
-    app.register_blueprint(show_timesheet, url_prefix="/timesheet")
+    app.register_blueprint(google_blueprint, url_prefix="/login")
+    app.register_blueprint(timesheet_blueprint, url_prefix="/timesheet")
+    app.register_blueprint(user_home_blueprint, url_prefix="/user")
     initialize_database()
 
     @app.route("/")
