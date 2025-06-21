@@ -9,11 +9,11 @@ Resources:
       CodeUri: .aws-sam-build
       PackageType: Zip
       Runtime: python3.12
-      Handler: pycaltime.app.lambda_handler
+      Handler: pycaltime.aws.lambda_handler
       Timeout: 300
       MemorySize: 1024
       Architectures:
-      - arm64
+        - arm64
       FunctionUrlConfig:
         AuthType: NONE
       Policies:

@@ -2,7 +2,6 @@
 
 from typing import Any
 
-from apig_wsgi import make_lambda_handler
 from flask import Flask, send_from_directory
 from flask.typing import ResponseReturnValue
 from flask_dance.contrib.google import make_google_blueprint
@@ -47,9 +46,6 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     print("App Created:")
     print(app.url_map)
     return app
-
-
-lambda_handler = make_lambda_handler(create_app())
 
 
 # @app.route("/")
