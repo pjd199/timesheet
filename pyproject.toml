@@ -1,6 +1,6 @@
 [project]
 name = "pycaltime"
-version = "0.0.1"
+dynamic = ["version"]
 authors = [{ name = "Pete Dibdin" }]
 description = "timesheet software using hashtags in a google calendar"
 keywords = [
@@ -36,7 +36,7 @@ dependencies = [
     "boto3>=1.38",
     "apig-wsgi>=2.19",
     "python-dotenv>=1.1",
-    "toml-to-requirements",
+    "Bootstrap-Flask>=2.5",
 ]
 
 [project.urls]
@@ -45,6 +45,10 @@ dependencies = [
 [build-system]
 requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+write_to = "src/pycaltime/_version.py"
+fallback_version = "0.0.0"
 
 [tool.setuptools.packages.find]
 where = ["src"]

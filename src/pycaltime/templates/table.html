@@ -1,0 +1,25 @@
+{% macro render_table(data, titles, primary_key="id", table_class="table", highlight="") %}
+
+<table class={{table_class}}>
+    <thead>
+        <tr>
+            {% for (id,name) in titles %}
+            <th scope="col">
+                {{ name }}
+            </th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in data %}
+        <tr {% if row[primary_key]==highlight %} class="table-primary" {% endif %}>
+            {% for (id, name) in titles %}
+            <td {% if id==primary_key %} scope="row" {% endif %}>
+                {{ row[id] }}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endmacro %}

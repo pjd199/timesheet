@@ -1,11 +1,14 @@
 """Flask App."""
 
+from datetime import datetime, timezone
 from typing import Any
 
 from flask import Flask, send_from_directory
 from flask.typing import ResponseReturnValue
+from flask_bootstrap import Bootstrap5
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+from pycaltime import __version__
 from pycaltime.auth.google import google_blueprint
 from pycaltime.config import config
 from pycaltime.storage import initialize_database
@@ -23,18 +26,32 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     Returns:
         Flask: application
     """
+    # initialise flask
     app = Flask(__name__)
     app.config.from_mapping(test_config)
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
     app.secret_key = config.FLASK_SECRET_KEY
+
+    # initialise bookstrap
+    app.config["BOOTSTRAP_BOOTSWATCH_THEME"] = "cerulean"
+    bootstrap = Bootstrap5()
+    bootstrap.init_app(app)
+
+    # register blueprints
     app.register_blueprint(google_blueprint, url_prefix="/login")
     app.register_blueprint(timesheet_blueprint, url_prefix="/timesheet")
     app.register_blueprint(user_home_blueprint, url_prefix="/user")
+
+    # initialise database
     initialize_database()
 
     @app.route("/")
     def home() -> ResponseReturnValue:
         return send_from_directory("static", "index.html")
+
+    @app.context_processor
+    def inject_globals() -> dict[str, str]:
+        return {"current_year": datetime.now(timezone.utc).year, "version": __version__}
 
     print("App Created:")
     print(app.url_map)

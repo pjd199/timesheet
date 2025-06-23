@@ -10,6 +10,7 @@ from flask_dance.contrib.google import google
 from pycaltime.calendar import first_day_of_the_week, update_timesheets
 from pycaltime.google import get_calendar_timezone, get_user_info
 from pycaltime.storage import UserData
+from pycaltime.utils import date_range
 
 timesheet_blueprint = Blueprint(
     "timesheet_blueprint", __name__, template_folder="templates"
@@ -54,14 +55,35 @@ def show() -> ResponseReturnValue:
                 timesheet.flexi = 0
                 timesheet.balance = 0
 
-    # render the table
-    weeks_to_display = [
-        (current_week + timedelta(weeks=x))
-        for x in range(-user_data.view_past_weeks, user_data.view_future_weeks + 1)
-    ]
+    # create the table headers
+    titles = [("date", "Date")]
+    for job in user_data.jobs:
+        titles.append((f"{job.hashtag}-hours", job.short_name))
+        titles.append((f"{job.hashtag}-diff", "+/-"))
+        titles.append((f"{job.hashtag}-flexi", "flexi"))
+
+    # create the table data
+    data = []
+    weeks = date_range(
+        current_week - timedelta(weeks=user_data.view_past_weeks),
+        current_week + timedelta(weeks=user_data.view_future_weeks + 1),
+        timedelta(weeks=1),
+    )
+    for week in weeks:
+        row = {"date": week.strftime("%d-%m-%Y")}
+        for job in user_data.jobs:
+            total = job.timesheets[week].total() / 60
+            diff = total - job.contracted_hours
+            flexi = job.timesheets[week].flexi / 60
+            row[f"{job.hashtag}-hours"] = f"{total:.2f}"
+            row[f"{job.hashtag}-diff"] = f"{diff:+.2f}"
+            row[f"{job.hashtag}-flexi"] = f"{flexi:.2f}"
+        data.append(row)
+
     return render_template(
         "show.html",
-        user_data=user_data,
-        weeks=weeks_to_display,
-        this_week=current_week,
+        data=data,
+        titles=titles,
+        primary_key="date",
+        highlight=current_week.strftime("%d-%m-%Y"),
     )
