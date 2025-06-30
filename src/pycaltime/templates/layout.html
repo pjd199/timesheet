@@ -22,6 +22,8 @@
         <div class="navbar-nav mr-auto collapse navbar-collapse" id="navbar">
             {{ render_nav_item('dashboard.home', 'Home') }}
             {{ render_nav_item('dashboard.timesheet', 'Timesheet') }}
+            {{ render_nav_item('dashboard.settings', 'Settings') }}
+            {{ render_nav_item('dashboard.about', 'About') }}
             {{ render_nav_item('google.login', 'Login') }}
         </div>
     </nav>
@@ -31,9 +33,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/js/bootstrap.bundle.min.js"></script>
 
-    <footer class="footer fixed-bottom bg-body p-2">
+    <!--
+    <footer class="footer bg-body p-2">
         <p class="text-end">PyCalTime {{version}} &copy; 2025</p>
     </footer>
+    -->
 </body>
 
 </html>

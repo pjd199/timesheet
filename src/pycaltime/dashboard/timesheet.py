@@ -58,6 +58,7 @@ def timesheet() -> ResponseReturnValue:
         titles.append((f"{job.hashtag}-hours", job.short_name))
         titles.append((f"{job.hashtag}-diff", "+/-"))
         titles.append((f"{job.hashtag}-flexi", "flexi"))
+    titles.append(("total", "Total"))
 
     # create the table data
     data = []
@@ -68,13 +69,16 @@ def timesheet() -> ResponseReturnValue:
     )
     for week in weeks:
         row = {"date": week.strftime("%d-%m-%Y")}
+        weekly_total = 0
         for job in user_data.jobs:
             total = job.timesheets[week].total() / 60
+            weekly_total += total
             diff = total - job.contracted_hours
             flexi = job.timesheets[week].flexi / 60
             row[f"{job.hashtag}-hours"] = f"{total:.2f}"
             row[f"{job.hashtag}-diff"] = f"{diff:+.2f}"
             row[f"{job.hashtag}-flexi"] = f"{flexi:.2f}"
+        row["total"] = f"{weekly_total:.2f}"
         data.append(row)
 
     return render_template(

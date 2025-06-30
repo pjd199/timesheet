@@ -162,9 +162,6 @@ class UserData(Model):
         region = config.AWS_REGION
 
     id = UnicodeAttribute(hash_key=True)
-    email = UnicodeAttribute()
-    given_name = UnicodeAttribute()
-    family_name = UnicodeAttribute()
     jobs = ListAttribute(of=JobData)
     view_past_weeks = NumberAttribute(default=4)
     view_future_weeks = NumberAttribute(default=2)

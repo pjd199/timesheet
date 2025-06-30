@@ -6,11 +6,9 @@ from typing import Any
 from flask import Flask, send_from_directory
 from flask.typing import ResponseReturnValue
 from flask_bootstrap import Bootstrap5
-from flask_dance.contrib.google import google
+from flask_dance.contrib.google import google, make_google_blueprint
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from pycaltime import __version__
-from pycaltime.auth import google_blueprint
 from pycaltime.config import config
 from pycaltime.dashboard.home import dashboard_blueprint
 from pycaltime.storage import initialize_database
@@ -38,24 +36,37 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     bootstrap.init_app(app)
 
     # register blueprints
-    app.register_blueprint(google_blueprint, url_prefix="/login")
     app.register_blueprint(dashboard_blueprint, url_prefix="/dashboard")
+    google_blueprint = make_google_blueprint(
+        client_id=config.GOOGLE_CLIENT_ID,
+        client_secret=config.GOOGLE_CLIENT_SECRET,
+        scope=[
+            "https://www.googleapis.com/auth/userinfo.profile",
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/calendar.readonly",
+        ],
+        redirect_to="dashboard.home",
+    )
+    app.register_blueprint(google_blueprint, url_prefix="/login")
 
     # initialise database
     initialize_database()
 
-    @app.route("/")
-    def home() -> ResponseReturnValue:
-        return send_from_directory("static", "index.html")
-
+    # for the jinja2 templates
     @app.context_processor
     def inject_globals() -> dict[str, str]:
         print(">>> inject <<<")
         return {
             "current_year": datetime.now(timezone.utc).year,
-            "version": __version__,
             "authenticated": google.authorized or google.token["expires_in"] < 0,
         }
+
+    app.jinja_env.tests["datetime_object"] = lambda value: isinstance(value, datetime)
+
+    # add the static homepage
+    @app.route("/")
+    def home() -> ResponseReturnValue:
+        return send_from_directory("static", "index.html")
 
     print("App Created:")
     print(app.url_map)

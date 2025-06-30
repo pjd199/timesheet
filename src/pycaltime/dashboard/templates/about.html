@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+<!-- Page title -->
+{% block title %}About{% endblock %}
+
+<!-- Content-->
+{% block content %}
+<div class="container">
+    <h1>About</h1>
+    <p>PyCalTime creates timesheets based on hashtags in a google calendar. Built with Flask on Python and deployed on
+        AWS Lambda.</p>
+    <p>GitHub repostitory: <a href="https://github.com/pjd199/timesheet" target="_blank"
+            rel="noopener noreferrer">https://github.com/pjd199/timesheet</a></p>
+    <p>Python version: {{python_version}}</p>
+    <p>PyCalTime build: {{build_version}}</p>
+    <p>Hostname: {{hostname}}</p>
+    <p>Running AWS Lambda: {{aws_lambda}}</p>
+</div>
+{% endblock %}

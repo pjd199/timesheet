@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% set job_fields = [
+("hashtag", "Hashtag"),
+("short_name", "Short Name"),
+("contracted_hours", "Contracted Hours"),
+("annual_holiday_hours", "Annual Holiday Hours"),
+("pro_rata_bank_holiday", "Pro Rata Bank Holiday Hours"),
+("employment_start", "Employment Start"),
+("employment_ends", "Employment End"),
+] %}
+
+<!-- Page title -->
+{% block title %}Settings{% endblock %}
+
+<!-- Content-->
+{% block content %}
+<div class="container">
+    <h1>Settings</h1>
+    <h2>User Details</h2>
+    <table>
+        <tr>
+            <td class="fw-bold">Given Name</td>
+            <td>{{user_info.given_name}}</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">Family Name</td>
+            <td>{{user_info.family_name}}</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">Email</td>
+            <td>{{user_info.email}}</td>
+        </tr>
+    </table>
+    <h2>Jobs</h2>
+    {% for job in user_data.jobs %}
+    <h3>{{job.name}}</h3>
+    <table>
+        {% for (field, field_name) in job_fields %}
+        <tr>
+            <td class="px-2">{{field_name}}</td>
+            <td class="px-2">
+                {% if job[field] is datetime_object %}
+                {{job[field].strftime('%d-%m-%Y') }}
+                {% else %}
+                {{job[field]}}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+
+
+    {% endfor %}
+
+    </table>
+</div>
+{% endblock %}

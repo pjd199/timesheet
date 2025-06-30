@@ -25,9 +25,3 @@ repos:
     hooks:
       - id: pydoclint
         args: [--config=pyproject.toml, -q]
-
-  - repo: https://github.com/semaphor-dk/dansabel
-    rev: 1.8.1
-    hooks:
-    - id: dansabel
-      name: checking jinja2
