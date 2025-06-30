@@ -3,23 +3,20 @@
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
-from flask import Blueprint, redirect, render_template, url_for
+from flask import redirect, render_template, url_for
 from flask.typing import ResponseReturnValue
 from flask_dance.contrib.google import google
 
 from pycaltime.calendar import first_day_of_the_week, update_timesheets
+from pycaltime.dashboard import dashboard_blueprint
 from pycaltime.google import get_calendar_timezone, get_user_info
 from pycaltime.storage import UserData
 from pycaltime.utils import date_range
 
-timesheet_blueprint = Blueprint(
-    "timesheet_blueprint", __name__, template_folder="templates"
-)
 
-
-@timesheet_blueprint.route("/show")
-def show() -> ResponseReturnValue:
-    """Show timesheet.
+@dashboard_blueprint.route("/timesheet")
+def timesheet() -> ResponseReturnValue:
+    """Timesheet.
 
     Returns:
         ResponseReturnValue: _description_
@@ -81,7 +78,7 @@ def show() -> ResponseReturnValue:
         data.append(row)
 
     return render_template(
-        "show.html",
+        "timesheet.html",
         data=data,
         titles=titles,
         primary_key="date",

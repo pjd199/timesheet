@@ -6,14 +6,14 @@ from typing import Any
 from flask import Flask, send_from_directory
 from flask.typing import ResponseReturnValue
 from flask_bootstrap import Bootstrap5
+from flask_dance.contrib.google import google
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from pycaltime import __version__
-from pycaltime.auth.google import google_blueprint
+from pycaltime.auth import google_blueprint
 from pycaltime.config import config
+from pycaltime.dashboard.home import dashboard_blueprint
 from pycaltime.storage import initialize_database
-from pycaltime.timesheet.show import timesheet_blueprint
-from pycaltime.user.user_home import user_home_blueprint
 
 
 # Flask app factory
@@ -39,8 +39,7 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
 
     # register blueprints
     app.register_blueprint(google_blueprint, url_prefix="/login")
-    app.register_blueprint(timesheet_blueprint, url_prefix="/timesheet")
-    app.register_blueprint(user_home_blueprint, url_prefix="/user")
+    app.register_blueprint(dashboard_blueprint, url_prefix="/dashboard")
 
     # initialise database
     initialize_database()
@@ -51,7 +50,12 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
 
     @app.context_processor
     def inject_globals() -> dict[str, str]:
-        return {"current_year": datetime.now(timezone.utc).year, "version": __version__}
+        print(">>> inject <<<")
+        return {
+            "current_year": datetime.now(timezone.utc).year,
+            "version": __version__,
+            "authenticated": google.authorized or google.token["expires_in"] < 0,
+        }
 
     print("App Created:")
     print(app.url_map)

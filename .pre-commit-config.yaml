@@ -30,3 +30,4 @@ repos:
     rev: 1.8.1
     hooks:
     - id: dansabel
+      name: checking jinja2
