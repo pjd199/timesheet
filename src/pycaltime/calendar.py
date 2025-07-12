@@ -27,8 +27,8 @@ def process_buffer_events(events: list[CalendarEvent]) -> None:
     buffer_events = [
         event
         for event in events
-        if ("travel" in event.title or "decompress" in event.title)
-        and "reclaim" in event.description
+        if ("travel" in event.title.lower() or "decompress" in event.title.lower())
+        and "reclaim" in event.description.lower()
     ]
     buffer_events_start = {x.start: x for x in buffer_events}
     buffer_events_finish = {x.finish: x for x in buffer_events}
@@ -58,8 +58,8 @@ def update_timesheets(
     user_data: UserData,
 ) -> None:
     """Update timesheets, adding them to the UserData object."""
-    job_hashtags = {job.hashtag for job in user_data.jobs}
-    job_for_hashtag = {job.hashtag: job for job in user_data.jobs}
+    job_hashtags = {job.hashtag.lower() for job in user_data.jobs}
+    job_for_hashtag = {job.hashtag.lower(): job for job in user_data.jobs}
 
     # for start_of_the_week, events in group_events_by_week(start, end, calendar_id):
     for week, group in groupby(
@@ -78,7 +78,6 @@ def update_timesheets(
         for event in events:
             # extract event information
             for x in job_hashtags & event.hashtags():
-                # print(f"{event.start} : {event.title} : {event.duration()}")
                 if "#holiday" in event.hashtags():
                     job_for_hashtag[x].timesheets[week].holiday += event.duration()
                 elif "#bank" in event.hashtags():

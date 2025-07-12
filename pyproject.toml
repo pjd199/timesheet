@@ -33,6 +33,7 @@ dependencies = [
     "google-api-python-client>=2.170",
     "google-auth-httplib2>=0.2",
     "google-auth-oauthlib>=1.2",
+    "googlemaps>=4.10",
     "boto3>=1.38",
     "apig-wsgi>=2.19",
     "python-dotenv>=1.1",

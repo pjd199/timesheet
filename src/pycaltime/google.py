@@ -1,13 +1,15 @@
 """Google API Interface."""
 
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
+from itertools import batched
 from re import findall
 from typing import Any
 from zoneinfo import ZoneInfo
 
 import googleapiclient.discovery
+import googlemaps
 from flask_dance.contrib.google import google
 from google.oauth2 import credentials
 
@@ -52,7 +54,32 @@ class CalendarEvent:
         Returns:
             frozenset[str]: hashtags
         """
-        return frozenset(findall(r"#\w+", f"{self.title} {self.description}"))
+        return frozenset(
+            findall(r"#\w+", f"{self.title.lower()} {self.description.lower()}")
+        )
+
+    def distance(self, origin: str) -> int:
+        """Calculate distance from an origin address.
+
+        Args:
+            origin (str): the start location
+
+        Returns:
+            int: the distance, in meters
+        """
+        maps_client = googlemaps.Client(key=config.GOOGLE_MAPS_API_KEY)
+        matrix = maps_client.distance_matrix(
+            origins=[origin],
+            destinations=[self.location],
+            arrival_time=self.start,
+            mode="driving",
+        )
+        if not (
+            matrix["status"] == "OK"
+            and matrix["rows"][0]["elements"][0]["status"] == "OK"
+        ):
+            return 0
+        return matrix["rows"][0]["elements"][0]["distance"]["value"]
 
 
 def api_service() -> None:
@@ -133,9 +160,9 @@ def iterate_events(
 
         yield from (
             CalendarEvent(
-                title=x.get("summary", "").lower(),
-                description=x.get("description", "").lower(),
-                location=x.get("location", "").lower(),
+                title=x.get("summary", ""),
+                description=x.get("description", ""),
+                location=x.get("location", ""),
                 start=datetime.fromisoformat(x.get("start").get("dateTime")),
                 finish=datetime.fromisoformat(x.get("end").get("dateTime")),
             )
@@ -147,3 +174,34 @@ def iterate_events(
         next_page_token = events_result.get("nextPageToken")
         if not next_page_token:
             break  # Exit loop if there are no more pages
+
+
+def get_distances(origin: str, events: Iterable[CalendarEvent]) -> Iterable[int]:
+    """Get distances to each event, starting from origin.
+
+    Args:
+        origin (str): _description_
+        events (Iterable[CalendarEvent]): _description_
+
+    Returns:
+        Iterable[int]: _description_
+    """
+    maps_client = googlemaps.Client(key=config.GOOGLE_MAPS_API_KEY)
+
+    results = []
+    for batch in batched(events, 25):
+        matrix = maps_client.distance_matrix(
+            origins=[origin],
+            destinations=[event.location for event in batch],
+            mode="driving",
+        )
+        if matrix["status"] != "OK":
+            results.extend([0] * len(events))
+
+        results.extend(
+            [
+                x["distance"]["value"] if x["status"] == "OK" else 0
+                for x in matrix["rows"][0]["elements"]
+            ]
+        )
+    return results

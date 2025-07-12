@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% from "table.html" import render_table %}
+
+<!-- Page title -->
+{% block title %}Mileage Report{% endblock %}
+
+<!-- Content-->
+{% block content %}
+<div class="container">
+    <h1>{{month}}</h1>
+    {{ render_table(data, titles, primary_key=primary_key) }}
+</div>
+{% endblock %}

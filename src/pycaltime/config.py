@@ -18,6 +18,7 @@ class Config:
         self.FLASK_SECRET_KEY = self.aws_secrets["FLASK_SECRET_KEY"]
         self.GOOGLE_CLIENT_ID = self.aws_secrets["GOOGLE_CLIENT_ID"]
         self.GOOGLE_CLIENT_SECRET = self.aws_secrets["GOOGLE_CLIENT_SECRET"]
+        self.GOOGLE_MAPS_API_KEY = self.aws_secrets["GOOGLE_MAPS_API_KEY"]
         self.AWS_REGION = self.aws_secrets["AWS_REGION"]
 
     # FLASK_SECRET_KEY - Must be unique per installation
@@ -30,6 +31,9 @@ class Config:
 
     # GOOGLE_CLIENT_SECRET - from the Google console
     GOOGLE_CLIENT_SECRET = None
+
+    # GOOGLE_MAPS_API_KEY - from the Google console
+    GOOGLE_MAPS_API_KEY = None
 
     # AWS_REGION
     AWS_REGION = None
