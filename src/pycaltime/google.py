@@ -114,7 +114,14 @@ def get_calendar_list() -> list[Any]:
 
 
 def get_calendar_timezone(calendar_id: str = "primary") -> str:
-    """Get the timezone of the primary calendar."""
+    """Get the timezone of the primary calendar.
+
+    Args:
+        calendar_id (str, optional): Calendar ID for lookup. Defaults to "primary".
+
+    Returns:
+        str: the timezone string
+    """
     calendar_list = api_service().calendarList().list().execute()
     return next(
         calendar.get("timeZone")
