@@ -21,9 +21,6 @@ def include_from_dict(cls: type[_T]) -> type[_T]:
     return cls
 
 
-range(1, 10, -1)
-
-
 def date_range(start: date, stop: date, step: timedelta) -> Iterator[date]:
     """Like range, but for dates.
 
@@ -46,3 +43,64 @@ def date_range(start: date, stop: date, step: timedelta) -> Iterator[date]:
         while current > stop:
             yield current
             current += step
+
+
+def first_day_of_the_week(t: date) -> date:
+    """Calculate the first day of the week, ie the Monday of that week."""
+    return t - timedelta(days=t.weekday())
+
+
+def first_day_of_the_month(t: date) -> date:
+    """Find the date of the first day of the month.
+
+    Args:
+        t (date): the input date.
+
+    Returns:
+        date: the date of the first day of the month
+    """
+    return t.replace(day=1)
+
+
+def first_day_of_the_next_month(t: date) -> date:
+    """Find the first day of the next month.
+
+    Args:
+        t (date): the input date
+
+    Returns:
+        date: the first day of the next month
+    """
+    if t.month == 12:
+        return date(t.year + 1, month=1, day=1)
+    return date(t.year, t.month + 1, day=1)
+
+
+def first_day_of_the_previous_month(t: date) -> date:
+    """Find the first day of the previous month.
+
+    Args:
+        t (date): the input date
+
+    Returns:
+        date: the date of the 1st of the previous month
+    """
+    if t.month == 1:
+        return date(t.year - 1, month=12, day=1)
+    return date(t.year, t.month - 1, day=1)
+
+
+def iterate_weeks(start: date, finish: date) -> Iterator[date]:
+    """Yield dates every 7 days between start and finish.
+
+    Args:
+        start (date): start date
+        finish (date): finish date
+
+    Yields:
+        date: weekly dates from start to finish (excluding finish)
+    """
+    result = start
+    while result < finish:
+        yield result
+        result += timedelta(weeks=1)

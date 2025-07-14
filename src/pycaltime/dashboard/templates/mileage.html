@@ -7,7 +7,59 @@
 <!-- Content-->
 {% block content %}
 <div class="container">
-    <h1>{{month}}</h1>
+    <h1>{{title}}</h1>
+    <a class="btn btn-primary" href="{{prev}}" role="button">Previous</a>
+    <a class="btn btn-primary" href="{{next}}" role="button">Next</a>
+
+    <select id="job-filter" onchange="applyJobFilter()" class="btn btn-primary dropdown-toggle">
+        {% for item in job_filter %}
+        <option value="{{ loop.index0 }}">
+            {{ item }}
+        </option>
+        {% endfor %}
+    </select>
+
     {{ render_table(data, titles, primary_key=primary_key) }}
 </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    /**
+     * JavaScript function to handle the dropdown change event.
+     * It constructs a new URL with a 'filter' parameter based on the
+     * selected dropdown item's index and navigates to it.
+     */
+    function applyJobFilter() {
+        const selectElement = document.getElementById('job-filter');
+        const selectedIndex = selectElement.value; // This is the 'value' attribute, which we set to loop.index0
+
+        // Check if a valid option (not the disabled placeholder) was selected
+        if (selectedIndex !== "") {
+            const baseUrl = window.location.origin + window.location.pathname;
+
+            // Construct the new URL with the filter parameter
+            const newUrl = `${baseUrl}?month={{month}}&filter=${selectedIndex}`;
+
+            // Navigate to the new URL
+            window.location.href = newUrl;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const filterParam = urlParams.get('filter');
+        const selectElement = document.getElementById('job-filter');
+
+        if (filterParam !== null && selectElement) {
+            // Find the option with the matching value and set it as selected
+            for (let i = 0; i < selectElement.options.length; i++) {
+                if (selectElement.options[i].value === filterParam) {
+                    selectElement.value = filterParam;
+                    break;
+                }
+            }
+        }
+    });
+</script>
 {% endblock %}

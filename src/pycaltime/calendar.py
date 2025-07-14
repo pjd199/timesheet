@@ -1,24 +1,11 @@
 """Calendar."""
 
-from collections.abc import Iterator
-from datetime import date, timedelta
+from datetime import date
 from itertools import groupby
 
 from pycaltime.google import CalendarEvent, iterate_events
 from pycaltime.storage import Timesheet, UserData
-
-
-def first_day_of_the_week(t: date) -> date:
-    """Calculate the first day of the week, ie the Monday of that week."""
-    return t - timedelta(days=t.weekday())
-
-
-def iterate_weeks(start: date, finish: date) -> Iterator[date]:
-    """Yield dates every 7 days between start and finish."""
-    result = start
-    while result < finish:
-        yield result
-        result += timedelta(weeks=1)
+from pycaltime.utils import first_day_of_the_week
 
 
 def process_buffer_events(events: list[CalendarEvent]) -> None:
@@ -66,7 +53,6 @@ def update_timesheets(
         iterate_events(start, finish),
         key=lambda x: first_day_of_the_week(x.start.date()),
     ):
-
         events = list(group)
         for job in user_data.jobs:
             job.timesheets[week] = Timesheet()
