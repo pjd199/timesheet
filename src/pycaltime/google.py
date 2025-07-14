@@ -196,7 +196,7 @@ def get_distances(origin: str, events: Iterable[CalendarEvent]) -> Iterable[int]
             mode="driving",
         )
         if matrix["status"] != "OK":
-            results.extend([0] * len(events))
+            results.extend([0] * len(batch))
 
         results.extend(
             [
