@@ -19,9 +19,11 @@ from pynamodb.constants import STRING
 from pynamodb.models import Model
 
 from pycaltime.config import config
+from pycaltime.utils import include_from_dict
 
 
 @dataclass
+@include_from_dict
 class Timesheet:
     """Timesheet dataclass."""
 
@@ -29,9 +31,15 @@ class Timesheet:
     holiday: int = 0
     bank: int = 0
     sick: int = 0
+    flexi: int = 0
 
     def __init__(
-        self, work: int = 0, holiday: int = 0, bank: int = 0, sick: int = 0
+        self,
+        work: int = 0,
+        holiday: int = 0,
+        bank: int = 0,
+        sick: int = 0,
+        flexi: int = 0,
     ) -> None:
         """Initializer.
 
@@ -40,11 +48,13 @@ class Timesheet:
             holiday (int, optional): holiday minutes. Defaults to 0.
             bank (int, optional): bank holiday minutes. Defaults to 0.
             sick (int, optional): sick leave minutes. Defaults to 0.
+            flexi (int, optional): flexi time. Defaults to 0.
         """
         self.work = work
         self.holiday = holiday
         self.bank = bank
         self.sick = sick
+        self.flexi = flexi
 
     def total(self) -> int:
         """Total minutes recorded in timesheet.
@@ -117,6 +127,7 @@ class TimesheetDict(Attribute):
                 "holiday": timesheet.holiday,
                 "bank": timesheet.bank,
                 "sick": timesheet.sick,
+                "flexi": timesheet.flexi,
             }
         return dumps(result)
 
@@ -134,7 +145,7 @@ class TimesheetDict(Attribute):
         result: dict[date, Timesheet] = {}
         for week, values in data.items():
             key = date(int(week[1:5]), int(week[6:8]), int(week[9:11]))
-            result[key] = Timesheet(**values)
+            result[key] = Timesheet.from_dict(values)
         return result
 
 
@@ -151,6 +162,18 @@ class JobData(MapAttribute):
     employment_end = UTCDateTimeAttribute()
     timesheets = TimesheetDict()
 
+    def update_flexi(self) -> None:
+        """Update flexi time."""
+        flexi = 0
+        if self.short_name == "HCT":  ### temporary fix!!!
+            flexi += 980
+        for week, timesheet in self.timesheets.items():
+            if self.employment_start.date() <= week < self.employment_end.date():
+                flexi += timesheet.total() - int(self.contracted_hours * 60)
+                timesheet.flexi = flexi
+            else:
+                timesheet.flexi = 0
+
 
 class UserData(Model):
     """DynamoDB UserData Table."""
@@ -166,6 +189,11 @@ class UserData(Model):
     view_past_weeks = NumberAttribute(default=4)
     view_future_weeks = NumberAttribute(default=2)
     last_updated = UTCDateTimeAttribute()
+
+    def update_flexi(self) -> None:
+        """Update flexi time on all jobs."""
+        for job in self.jobs:
+            job.update_flexi()
 
 
 # initialise the database

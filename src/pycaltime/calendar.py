@@ -1,6 +1,6 @@
 """Calendar."""
 
-from datetime import date
+from datetime import UTC, date, datetime
 from itertools import groupby
 
 from pycaltime.google import CalendarEvent, iterate_events
@@ -74,3 +74,5 @@ def update_timesheets(
                     job_for_hashtag[x].timesheets[week].work += event.duration() // len(
                         job_hashtags & event.hashtags()
                     )
+    user_data.update_flexi()
+    user_data.last_updated = datetime.now(UTC)
