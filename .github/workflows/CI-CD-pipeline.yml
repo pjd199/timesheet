@@ -32,6 +32,9 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
 
+      - name: Preparing packages for SAM Deploy
+        run: pip install . -t .aws-sam-build
+
       - name: Setup AWS SAM
         uses: aws-actions/setup-sam@v2
         with:
@@ -46,9 +49,6 @@ jobs:
 
       - name: SAM Validate
         run: sam validate --lint
-
-      - name: Preparing packages for SAM Deploy
-        run: pip install . -t .aws-sam-build
 
       - name: SAM Deploy to AWS Lambda
         run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
