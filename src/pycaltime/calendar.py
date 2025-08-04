@@ -53,12 +53,13 @@ def update_timesheets(
         iterate_events(start, finish),
         key=lambda x: first_day_of_the_week(x.start.date()),
     ):
+        # process the buffer events
         events = list(group)
+        process_buffer_events(events)
+
+        # create blank timesheets
         for job in user_data.jobs:
             job.timesheets[week] = Timesheet()
-
-        # process the buffer events
-        process_buffer_events(events)
 
         # process events
         for event in events:
@@ -74,5 +75,6 @@ def update_timesheets(
                     job_for_hashtag[x].timesheets[week].work += event.duration() // len(
                         job_hashtags & event.hashtags()
                     )
+
     user_data.update_flexi()
     user_data.last_updated = datetime.now(UTC)

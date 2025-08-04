@@ -2,7 +2,7 @@
 
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, timedelta
 from itertools import batched
 from re import findall
 from typing import Any
@@ -144,20 +144,29 @@ def iterate_events(
         CalendarEvent: the events
     """
     calendar_timezone = get_calendar_timezone()
-    next_page_token = None
+    time_start = datetime(
+        year=start.year,
+        month=start.month,
+        day=start.day,
+        tzinfo=ZoneInfo(calendar_timezone),
+    ).isoformat()
+    time_finish = datetime(
+        year=finish.year,
+        month=finish.month,
+        day=finish.day,
+        tzinfo=ZoneInfo(calendar_timezone),
+    ).isoformat()
+
     # Call the Calendar API to get events
+    next_page_token = None
     while True:
         events_result = (
             api_service()
             .events()
             .list(
                 calendarId=calendar_id,
-                timeMin=datetime.combine(
-                    start, time(), tzinfo=ZoneInfo(calendar_timezone)
-                ).isoformat(),
-                timeMax=datetime.combine(
-                    finish, time(), tzinfo=ZoneInfo(calendar_timezone)
-                ).isoformat(),
+                timeMin=time_start,
+                timeMax=time_finish,
                 singleEvents=True,
                 orderBy="startTime",
                 pageToken=next_page_token,

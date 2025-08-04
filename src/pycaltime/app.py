@@ -1,12 +1,12 @@
 """Flask App."""
 
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any
 
 from flask import Flask, send_from_directory
 from flask.typing import ResponseReturnValue
 from flask_bootstrap import Bootstrap5
-from flask_dance.contrib.google import google, make_google_blueprint
+from flask_dance.contrib.google import make_google_blueprint
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from pycaltime.config import config
@@ -53,13 +53,12 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     initialize_database()
 
     # for the jinja2 templates
-    @app.context_processor
-    def inject_globals() -> dict[str, str]:
-        print(">>> inject <<<")
-        return {
-            "current_year": datetime.now(timezone.utc).year,
-            "authenticated": google.authorized or google.token["expires_in"] < 0,
-        }
+    # @app.context_processor
+    # def inject_globals() -> dict[str, str]:
+    #     return {
+    #         "current_year": datetime.now(timezone.utc).year,
+    #         "authenticated": google.authorized or google.token["expires_in"] < 0,
+    #     }
 
     app.jinja_env.tests["datetime_object"] = lambda value: isinstance(value, datetime)
 
