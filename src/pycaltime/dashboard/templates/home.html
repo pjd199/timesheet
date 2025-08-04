@@ -6,9 +6,11 @@
 <!-- Content-->
 {% block content %}
 <div class="container">
-    <h1>Welcome</h1>
+    <h1>PyCalTime</h1>
     <p>Hi {{ given_name }}, welcome to your PyCalTime dashboard.</p>
+    <p>This week, you're working {{ "%0.2f" | format(worked | float) }} / {{ "%0.2f" | format(contracted | float) }} hours</p>
 
+    <h2>Job Summary</h2>
     <div class="row">
         {% for job in user_data.jobs %}
         <div class="col-sm-6">
@@ -17,7 +19,7 @@
                     {{ job.hashtag }}
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">{{ job.name }}</h5>
+                    <h3 class="card-title">{{ job.name }}</h3>
                     <p class="card-text">This week: {{ job.timesheets[current_week].total()/60 | float }} /
                         {{job.contracted_hours}} hours</p>
                     <p class="card-text">Flexi: {{ "%0.2f" | format(job.timesheets[current_week].flexi/60 | float) }} hours</p>

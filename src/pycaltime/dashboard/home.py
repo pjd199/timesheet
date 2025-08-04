@@ -25,17 +25,18 @@ def home() -> ResponseReturnValue:
     timezone = get_calendar_timezone()
     current_week = first_day_of_the_week(datetime.now(tz=ZoneInfo(timezone)).date())
 
-    # update with recent calendar data
-    update_timesheets(
-        current_week - timedelta(weeks=user_data.view_past_weeks),
-        current_week + timedelta(weeks=user_data.view_future_weeks + 1),
-        user_data,
-    )
+    # update with this week's data
+    update_timesheets(current_week, current_week + timedelta(weeks=1), user_data)
     user_data.save()
+
+    worked = sum(job.timesheets[current_week].total() / 60 for job in user_data.jobs)
+    contracted = sum(job.contracted_hours for job in user_data.jobs)
 
     return render_template(
         "home.html",
         given_name=user_info.given_name,
         user_data=user_data,
         current_week=current_week,
+        worked=worked,
+        contracted=contracted,
     )
