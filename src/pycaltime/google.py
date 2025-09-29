@@ -99,7 +99,6 @@ def get_user_info() -> UserInfo:
     """User Information."""
     resp = google.get("/oauth2/v2/userinfo")
     data = resp.json()
-    print(f"Loading userinfo {data}")
     return UserInfo.from_dict(data)
 
 

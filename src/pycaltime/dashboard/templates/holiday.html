@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% from "table.html" import render_table %}
+
+<!-- Page title -->
+{% block title %}Holiday Report{% endblock %}
+
+<!-- Content-->
+{% block content %}
+<div class="container">
+    <h1>{{title}}</h1>
+    <a class="btn btn-primary" href="{{prev}}" role="button">Previous</a>
+    <a class="btn btn-primary" href="{{next}}" role="button">Next</a>
+
+    {{ render_table(data, titles, primary_key=primary_key,highlight=highlight) }}
+</div>
+{% endblock %}

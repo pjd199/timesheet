@@ -104,3 +104,19 @@ def iterate_weeks(start: date, finish: date) -> Iterator[date]:
     while result < finish:
         yield result
         result += timedelta(weeks=1)
+
+
+def iterate_days(start: date, finish: date) -> Iterator[date]:
+    """Yield days between start and finish.
+
+    Args:
+        start (date): start date
+        finish (date): finish date
+
+    Yields:
+        date: dates from start to finish (excluding finish)
+    """
+    result = start
+    while result < finish:
+        yield result
+        result += timedelta(days=1)
