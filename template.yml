@@ -13,7 +13,7 @@ Resources:
       Timeout: 300
       MemorySize: 1024
       Architectures:
-        - arm64
+        - x86_64
       FunctionUrlConfig:
         AuthType: NONE
       Policies:
