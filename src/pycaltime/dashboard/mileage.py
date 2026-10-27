@@ -60,7 +60,7 @@ def mileage() -> ResponseReturnValue:
         for event in iterate_events(month, first_day_of_the_next_month(month))
         if event.location and event.hashtags() & hashtags
     ]
-    origin = "217 St Leonards Road, Horsham, RH13 6BE"
+    origin = "10 Ashurst Close, Horsham, RH12 4JN"
     distances = get_distances(origin, location_events)
 
     # create the table headers
