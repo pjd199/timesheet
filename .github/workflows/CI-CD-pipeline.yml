@@ -24,10 +24,10 @@ jobs:
 
     steps:
       - name: Check out Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
@@ -36,12 +36,12 @@ jobs:
         run: pip install . -t .aws-sam-build
 
       - name: Setup AWS SAM
-        uses: aws-actions/setup-sam@v2
+        uses: aws-actions/setup-sam@v3
         with:
           use-installer: true
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
